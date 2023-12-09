@@ -1,0 +1,14 @@
+etc/*
+!etc/def/*
+lib/libcoin.a.lock 
+test
+**.[aod]
+**.ii
+*.out
+out
+bin/*
+*/obj
+obj
+.gdb_history
+all_deps
+tags
