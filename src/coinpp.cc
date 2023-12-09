@@ -1,122 +1,80 @@
-#include <fmt.hh>
 #include <json.hh>
-#include <typeinfo>
-#include <util.hh>
-#include <web_api.hh>
-#include <fcntl.h>
-#include <util.hh>
-#include <list>
+#include <iostream>
+#include <iomanip> 
+#include <string>
+#include <vector>
 #include <array>
+#include <algorithm>
 #include <symbol.hh>
-#include <money.hh>
-
-using namespace util;
-using namespace fmt;
 
 using namespace std;
 
-using std::ostream;
-using std::exception;
-using std::type_info;
-using namespace coin;
-
-typedef map<sym_t,double> goals_t;
-goals_t goals;
-
-static money_t _usd_min_size=10;
-static money_t _usd_max_size=200;
-static money_t _usd_spot;
-
-const money_t & usd_spot()
-{
-  return _usd_spot;
+extern "C" {
+  int main(int argc, char**argv, char**envp) ;
 };
-const money_t & usd_spot(money_t new_spot)
-{
-  money_t res=_usd_spot;
-  _usd_spot=new_spot;
-  return _usd_spot;
-};
-const money_t & usd_min_size() {
-  return _usd_min_size;
-};
-const money_t & usd_max_size() {
-  return _usd_max_size;
-};
-money_t btc_max_size() {
-  return usd_max_size()/usd_spot();
-};
-money_t btc_min_size() {
-  return usd_min_size()/usd_spot();
-};
-
-set<sym_t> ignored_syms;
-void load_config()
-{
-  const string text;
-  try {
-    json data=json::parse(util::read_file("etc/phrase.json"));
-    cout << setw(4) << data << endl;
-  } catch ( exception &e ) {
-    cerr << e << endl;
-    ostringstream text;
-    const string abandon = util::quote("abandon");
-    const string about = util::quote("about");
-    
-    for(int i=0;i<11;i++){
-      text << abandon << ", ";
-    }
-    text << about;
-
-    util::write_file("etc.phrase.json",text.str());
+template<typename src_t>
+struct range_t {
+  typedef typename src_t::iterator iterator;
+  typedef typename src_t::const_iterator const_iterator;
+  typedef typename src_t::value_type value_type;
+  typedef typename src_t::reference reference;
+  typedef typename src_t::const_reference const_reference;
+  iterator begin;
+  iterator end;
+  template<typename itr_t>
+    range_t(const itr_t &begin, const itr_t &end)
+    : begin(begin), end(end)
+  {
+  }
+  range_t(src_t &src)
+    : begin(src.begin()), end(src.end())
+  {
+  }
+  range_t &operator++(int){
+    if(begin!=end)
+      ++begin;
+    return *this;
   };
-};
-
-typedef vector<string> argv_t;
-
-template<typename val_t>
-int sign(const val_t &val)
-{
-  if(!val)
-    return 0;
-  if(val==abs(val))
-    return 1;
-  else
-    return -1;
-};
-
-#define xverbose(x) xtrace(x)
-int xmain( const argv_t &args )
-{
-  bool first=true;
-  for( auto arg : args ) {
-    if(!first)
-      cout << "," << endl;
-    cout << "  " << arg;
+  range_t &operator*() const {
+    return *this;
   };
-  cout << endl;
+  const range_t &operator*() {
+    return *this;
+  };
+  operator bool() const {
+    return begin<end;
+  };
+  void operator=(const string &str){
+    assert (b!=end);
+    *begin=str;
+  }
+};
+template<typename src_t>
+range_t<src_t> range(src_t src)
+{
+  return range_t<src_t>(src);
+};
+template<typename vec_t>
+int xmain(const vec_t &args, const vec_t &envs){
+  cout << "Hello, World!" << endl;
+  cout << "ARGS: " << endl;
+  for(auto r(range(args)); r; r++){
+    cout << *r << endl;
+  };
+  cout << "ENVP: " << endl;
+  for(auto r(range(envs)); r; r++){
+    cout << *r << endl;
+  };
   return 0;
 };
-// This is atest.
-// This is only a test
-int main( int argc, char** argv )
-{
-  try
-  {
-    mkdir("log",0700);
-    split_stream("log/bal.log");
-    argv_t args( argv+1, argv+argc );
-    if ( xmain( args ) )
-      return 1;
-    return 0;
-  }
-  catch ( exception& e )
-  {
-    cout << e << nl;
-  }
-  catch ( ... )
-  {
-    cout << nl << "wtf?" << nl;
-  }
-  return 1;
-};
+int main(int argc, char**argv, char**envp) {
+  char **arge(argv);
+  while(*arge)
+    ++arge;
+  char **enve(envp);
+  while(*enve)
+    ++enve;
+  vector<string> arg = vector<string>(argv,arge);
+  vector<string> env = vector<string>(envp,enve);
+  return xmain(arg,env);
+}

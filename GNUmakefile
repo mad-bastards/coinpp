@@ -7,7 +7,7 @@ $(MAKECMDGOALS):
 	+${MAKE} -f Makefile --jobs=8 $(MAKECMDGOALS)
 endif
 
-bin/addr: make_it
+bin/coinpp: make_it
 
 %:
 	+${MAKE} -f Makefile --jobs=8 $@
