@@ -1,10 +1,10 @@
-MAKEFLAGS+= -rR
+MAKEFLAGS= $(SAVE_FLAGS) -rR 
 
 include etc/default_target.mk
 include etc/chain.mk
 
-bin/bal.test: bin/bal
-	bin/bal -g
+bin/addr.test: bin/addr
+	bin/addr -g
 
 all:=
 

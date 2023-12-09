@@ -12,3 +12,4 @@ obj
 .gdb_history
 all_deps
 tags
+log
